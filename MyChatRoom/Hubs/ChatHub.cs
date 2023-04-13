@@ -10,7 +10,7 @@ namespace MyChatRoom.Hubs
         public readonly ChatService _chatService;
         public ChatHub(ChatService chatService)
         {
-            _chatService= chatService;
+            _chatService = chatService;
         }
 
         public override async Task OnConnectedAsync()
@@ -23,6 +23,13 @@ namespace MyChatRoom.Hubs
         {
             Groups.RemoveFromGroupAsync(Context.ConnectionId, "MyChatRomm");
             return base.OnDisconnectedAsync(exception);
+        }
+
+        public async Task AddUserConnectionId(string name)
+        {
+            _chatService.AddUserConnectionId(name, Context.ConnectionId);
+            var onlineUsers = _chatService.GetOnlineUsers();
+            await Clients.Groups("MyChatRoom").SendAsync("OnlineUsers", onlineUsers);
         }
     }
 }
